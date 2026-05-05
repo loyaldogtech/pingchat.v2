@@ -10,6 +10,7 @@ const messagesList = document.getElementById("messagesList");
 const channelNameInput = document.getElementById("channelName");
 const currentUserInput = document.getElementById("currentUser");
 const messagesContainer = document.getElementById("messagesContainer");
+const antiForgeryInput = document.querySelector("#antiForgeryForm input[name='__RequestVerificationToken']");
 
 function scrollMessagesToBottom() {
     if (!messagesContainer) return;
@@ -24,8 +25,38 @@ function formatTimestamp(isoUtcString) {
     });
 }
 
+function createDeleteForm(messageId, channelName) {
+    const form = document.createElement("form");
+    form.method = "post";
+    form.action = `/Chat/${encodeURIComponent(channelName)}?handler=Delete&name=${encodeURIComponent(channelName)}`;
+
+    const messageIdInput = document.createElement("input");
+    messageIdInput.type = "hidden";
+    messageIdInput.name = "messageId";
+    messageIdInput.value = messageId;
+
+    form.appendChild(messageIdInput);
+
+    if (antiForgeryInput && antiForgeryInput.value) {
+        const tokenInput = document.createElement("input");
+        tokenInput.type = "hidden";
+        tokenInput.name = "__RequestVerificationToken";
+        tokenInput.value = antiForgeryInput.value;
+        form.appendChild(tokenInput);
+    }
+
+    const button = document.createElement("button");
+    button.type = "submit";
+    button.className = "btn btn-sm btn-outline-danger";
+    button.textContent = "Delete";
+
+    form.appendChild(button);
+
+    return form;
+}
+
 function appendMessage(messageId, userName, messageText, isoUtcString) {
-    if (!messagesList) return;
+    if (!messagesList || !channelNameInput) return;
 
     const emptyState = messagesList.querySelector("[data-empty-state='true']");
     if (emptyState) {
@@ -37,17 +68,27 @@ function appendMessage(messageId, userName, messageText, isoUtcString) {
     item.setAttribute("data-message-id", messageId);
 
     const timeText = formatTimestamp(isoUtcString);
+    const currentUserName = currentUserInput?.value || "";
 
-    item.innerHTML = `
-        <div class="d-flex justify-content-between align-items-start gap-3">
-            <div class="flex-grow-1">
-                <strong>${userName}</strong><br />
-                <small class="text-muted">${timeText}</small><br />
-                <span>${messageText}</span>
-            </div>
-        </div>
+    const wrapper = document.createElement("div");
+    wrapper.className = "d-flex justify-content-between align-items-start gap-3";
+
+    const content = document.createElement("div");
+    content.className = "flex-grow-1";
+    content.innerHTML = `
+        <strong>${userName}</strong><br />
+        <small class="text-muted">${timeText}</small><br />
+        <span>${messageText}</span>
     `;
 
+    wrapper.appendChild(content);
+
+    if (currentUserName && userName === currentUserName) {
+        const deleteForm = createDeleteForm(messageId, channelNameInput.value);
+        wrapper.appendChild(deleteForm);
+    }
+
+    item.appendChild(wrapper);
     messagesList.appendChild(item);
     scrollMessagesToBottom();
 }

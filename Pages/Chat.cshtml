@@ -68,7 +68,7 @@
                         }
                         else
                         {
-                            <li class="list-group-item text-center py-4 text-muted">
+                            <li class="list-group-item text-center py-4 text-muted" data-empty-state="true">
                                 No messages yet. Start the conversation.
                             </li>
                         }
@@ -78,6 +78,10 @@
                 <div class="card-footer">
                     <input type="hidden" id="channelName" value="@Model.ChannelName" />
                     <input type="hidden" id="currentUser" value="@(User.Identity?.Name ?? "Anonymous")" />
+
+                    <form id="antiForgeryForm" method="post" class="d-none">
+                        @Html.AntiForgeryToken()
+                    </form>
 
                     <form>
                         <label class="form-label" for="messageInput">New message</label>
