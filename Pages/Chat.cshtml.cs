@@ -55,25 +55,67 @@ public class ChatModel : PageModel
 
     public async Task<IActionResult> OnGetAsync()
     {
-        var email = User.Identity?.Name?.ToLower() ?? string.Empty;
-        var isClientUser = email.Contains("client");
-
-        if (isClientUser && ChannelName.Equals("internal", StringComparison.OrdinalIgnoreCase))
+        if (UserBlockedFromChannel(ChannelName))
         {
             return RedirectToPage("/Channels");
         }
+
+        await LoadMessagesAsync();
+        return Page();
+    }
+
+    public async Task<IActionResult> OnPostDeleteAsync(int messageId, string name)
+    {
+        if (UserBlockedFromChannel(name))
+        {
+            return RedirectToPage("/Channels");
+        }
+
+        var currentUserName = User.Identity?.Name ?? string.Empty;
+
+        var message = await _db.ChannelMessages.FirstOrDefaultAsync(m =>
+            m.Id == messageId &&
+            m.ChannelName == name &&
+            m.UserName == currentUserName);
+
+        if (message is not null)
+        {
+            _db.ChannelMessages.Remove(message);
+            await _db.SaveChangesAsync();
+        }
+
+        return RedirectToPage(new { name });
+    }
+
+    private bool UserBlockedFromChannel(string channelName)
+    {
+        var email = User.Identity?.Name?.ToLower() ?? string.Empty;
+        var isClientUser = email.Contains("client");
+
+        return isClientUser &&
+               channelName.Equals("internal", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private async Task LoadMessagesAsync()
+    {
+        var currentUserName = User.Identity?.Name ?? string.Empty;
 
         Messages = await _db.ChannelMessages
             .Where(m => m.ChannelName == ChannelName)
             .OrderBy(m => m.CreatedAtUtc)
             .Select(m => new ChatMessageItem(
+                m.Id,
                 m.UserName,
                 m.CreatedAtUtc.ToLocalTime().ToString("h:mm tt"),
-                m.Text))
+                m.Text,
+                m.UserName == currentUserName))
             .ToListAsync();
-
-        return Page();
     }
 
-    public record ChatMessageItem(string Author, string Time, string Text);
+    public record ChatMessageItem(
+        int Id,
+        string Author,
+        string Time,
+        string Text,
+        bool CanDelete);
 }

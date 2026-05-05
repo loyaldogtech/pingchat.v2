@@ -31,9 +31,21 @@
                             @foreach (var message in Model.Messages)
                             {
                                 <li class="list-group-item">
-                                    <strong>@message.Author</strong><br />
-                                    <small class="text-muted">@message.Time</small><br />
-                                    <span>@message.Text</span>
+                                    <div class="d-flex justify-content-between align-items-start gap-3">
+                                        <div class="flex-grow-1">
+                                            <strong>@message.Author</strong><br />
+                                            <small class="text-muted">@message.Time</small><br />
+                                            <span>@message.Text</span>
+                                        </div>
+
+                                        @if (message.CanDelete)
+                                        {
+                                            <form method="post" asp-page-handler="Delete" asp-route-name="@Model.ChannelName">
+                                                <input type="hidden" name="messageId" value="@message.Id" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </form>
+                                        }
+                                    </div>
                                 </li>
                             }
                         }
