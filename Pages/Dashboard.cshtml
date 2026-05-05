@@ -12,7 +12,10 @@
                 Workspace: <strong>@Model.WorkspaceName</strong> · Role: <strong>@Model.CurrentUserRole</strong>
             </p>
         </div>
-        <a class="btn btn-primary" asp-page="/Channels">Open Channels</a>
+        <div class="d-flex gap-2">
+            <a class="btn btn-primary" asp-page="/Channels">Open Channels</a>
+            <a class="btn btn-outline-secondary" asp-page="/Conversations">Open Conversations</a>
+        </div>
     </div>
 
     <div class="row mt-4">
@@ -53,26 +56,42 @@
         </div>
     </div>
 
-    <div class="card shadow-sm mt-3">
-        <div class="card-body">
-            <h2 class="h5">Workspace Summary</h2>
+    <div class="row mt-3">
+        <div class="col-lg-6 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5">Workspace Summary</h2>
 
-            @if (Model.CurrentUserRole == "Client User")
-            {
-                <p class="mb-2">
-                    You are viewing PingChat as a client user. Internal agency-only channels are hidden from your dashboard and channel list.
-                </p>
-            }
-            else
-            {
-                <p class="mb-2">
-                    You are viewing PingChat as an agency user. You can access both shared client channels and internal agency-only collaboration spaces.
-                </p>
-            }
+                    @if (Model.CurrentUserRole == "Client User")
+                    {
+                        <p class="mb-2">
+                            You are viewing PingChat as a client user. Internal agency-only channels are hidden from your dashboard and channel list.
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="mb-2">
+                            You are viewing PingChat as an agency user. You can access both shared client channels and internal agency-only collaboration spaces.
+                        </p>
+                    }
 
-            <p class="mb-0">
-                Use the <strong>Open Channels</strong> button to move into the live SignalR chat experience.
-            </p>
+                    <p class="mb-0">
+                        Use <strong>Open Channels</strong> for project rooms and <strong>Open Conversations</strong> for direct messages.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5">Quick Access</h2>
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-outline-primary" asp-page="/Channels">Browse team channels</a>
+                        <a class="btn btn-outline-secondary" asp-page="/Conversations">Start a direct conversation</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
