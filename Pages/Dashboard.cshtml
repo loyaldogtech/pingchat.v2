@@ -5,11 +5,63 @@
 }
 
 <div class="container mt-4">
-    <h1>PingChat Dashboard</h1>
-    <p>Welcome to PingChat.</p>
-    <p>This is the first real application page.</p>
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <h1 class="mb-1">PingChat Dashboard</h1>
+            <p class="text-muted mb-0">Workspace overview for your agency/client collaboration app.</p>
+        </div>
+        <a class="btn btn-primary" asp-page="/Channels">Open Channels</a>
+    </div>
 
-    <div class="mt-4">
-        <a class="btn btn-primary" asp-page="/Channels">View Channels</a>
+    <div class="row mt-4">
+        <div class="col-md-6 col-xl-3 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Workspace</div>
+                    <div class="fs-5 fw-semibold">@Model.WorkspaceName</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Your Role</div>
+                    <div class="fs-5 fw-semibold">@Model.CurrentUserRole</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Channels</div>
+                    <div class="fs-5 fw-semibold">@Model.ChannelCount</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Clients</div>
+                    <div class="fs-5 fw-semibold">@Model.ClientCount</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-3">
+        <div class="card-body">
+            <h2 class="h5">What this page is doing</h2>
+            <p class="mb-2">
+                This dashboard is now reading values from the <code>DashboardModel</code> PageModel
+                instead of hardcoded HTML.
+            </p>
+            <p class="mb-0">
+                That means the Razor Page is following the normal Razor Pages pattern:
+                the PageModel provides data, and the <code>.cshtml</code> file renders it.
+            </p>
+        </div>
     </div>
 </div>
