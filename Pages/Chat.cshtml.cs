@@ -53,8 +53,16 @@ public class ChatModel : PageModel
 
     public List<ChatMessageItem> Messages { get; private set; } = new();
 
-    public async Task OnGetAsync()
+    public async Task<IActionResult> OnGetAsync()
     {
+        var email = User.Identity?.Name?.ToLower() ?? string.Empty;
+        var isClientUser = email.Contains("client");
+
+        if (isClientUser && ChannelName.Equals("internal", StringComparison.OrdinalIgnoreCase))
+        {
+            return RedirectToPage("/Channels");
+        }
+
         Messages = await _db.ChannelMessages
             .Where(m => m.ChannelName == ChannelName)
             .OrderBy(m => m.CreatedAtUtc)
@@ -63,6 +71,8 @@ public class ChatModel : PageModel
                 m.CreatedAtUtc.ToLocalTime().ToString("h:mm tt"),
                 m.Text))
             .ToListAsync();
+
+        return Page();
     }
 
     public record ChatMessageItem(string Author, string Time, string Text);
