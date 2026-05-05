@@ -8,14 +8,16 @@
     <div class="d-flex justify-content-between align-items-start">
         <div>
             <h1 class="mb-1">PingChat Dashboard</h1>
-            <p class="text-muted mb-0">Workspace overview for your agency/client collaboration app.</p>
+            <p class="text-muted mb-0">
+                Workspace: <strong>@Model.WorkspaceName</strong> · Role: <strong>@Model.CurrentUserRole</strong>
+            </p>
         </div>
         <a class="btn btn-primary" asp-page="/Channels">Open Channels</a>
     </div>
 
     <div class="row mt-4">
         <div class="col-md-6 col-xl-3 mb-3">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <div class="text-muted small">Workspace</div>
                     <div class="fs-5 fw-semibold">@Model.WorkspaceName</div>
@@ -24,7 +26,7 @@
         </div>
 
         <div class="col-md-6 col-xl-3 mb-3">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <div class="text-muted small">Your Role</div>
                     <div class="fs-5 fw-semibold">@Model.CurrentUserRole</div>
@@ -33,16 +35,16 @@
         </div>
 
         <div class="col-md-6 col-xl-3 mb-3">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <div class="text-muted small">Channels</div>
+                    <div class="text-muted small">Visible Channels</div>
                     <div class="fs-5 fw-semibold">@Model.ChannelCount</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-xl-3 mb-3">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <div class="text-muted small">Clients</div>
                     <div class="fs-5 fw-semibold">@Model.ClientCount</div>
@@ -53,14 +55,23 @@
 
     <div class="card shadow-sm mt-3">
         <div class="card-body">
-            <h2 class="h5">What this page is doing</h2>
-            <p class="mb-2">
-                This dashboard is now reading values from the <code>DashboardModel</code> PageModel
-                instead of hardcoded HTML.
-            </p>
+            <h2 class="h5">Workspace Summary</h2>
+
+            @if (Model.CurrentUserRole == "Client User")
+            {
+                <p class="mb-2">
+                    You are viewing PingChat as a client user. Internal agency-only channels are hidden from your dashboard and channel list.
+                </p>
+            }
+            else
+            {
+                <p class="mb-2">
+                    You are viewing PingChat as an agency user. You can access both shared client channels and internal agency-only collaboration spaces.
+                </p>
+            }
+
             <p class="mb-0">
-                That means the Razor Page is following the normal Razor Pages pattern:
-                the PageModel provides data, and the <code>.cshtml</code> file renders it.
+                Use the <strong>Open Channels</strong> button to move into the live SignalR chat experience.
             </p>
         </div>
     </div>
