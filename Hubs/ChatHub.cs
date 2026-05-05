@@ -15,13 +15,35 @@ public class ChatHub : Hub
         _db = db;
     }
 
+    private bool IsClientUser()
+    {
+        var email = Context.User?.Identity?.Name?.ToLower() ?? string.Empty;
+        return email.Contains("client");
+    }
+
+    private bool IsBlockedChannel(string channelName)
+    {
+        return IsClientUser() &&
+               channelName.Equals("internal", StringComparison.OrdinalIgnoreCase);
+    }
+
     public async Task JoinChannel(string channelName)
     {
+        if (string.IsNullOrWhiteSpace(channelName) || IsBlockedChannel(channelName))
+        {
+            return;
+        }
+
         await Groups.AddToGroupAsync(Context.ConnectionId, channelName);
     }
 
     public async Task LeaveChannel(string channelName)
     {
+        if (string.IsNullOrWhiteSpace(channelName))
+        {
+            return;
+        }
+
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, channelName);
     }
 
@@ -29,7 +51,8 @@ public class ChatHub : Hub
     {
         if (string.IsNullOrWhiteSpace(channelName) ||
             string.IsNullOrWhiteSpace(userName) ||
-            string.IsNullOrWhiteSpace(message))
+            string.IsNullOrWhiteSpace(message) ||
+            IsBlockedChannel(channelName))
         {
             return;
         }
