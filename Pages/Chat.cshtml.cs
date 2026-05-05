@@ -36,6 +36,21 @@ public class ChatModel : PageModel
         }
     }
 
+    public string ChannelDescription
+    {
+        get
+        {
+            return ChannelName.ToLower() switch
+            {
+                "general" => "Shared communication space for both agency and client users.",
+                "internal" => "Private internal channel for agency-only discussion.",
+                "client-acme" => "Dedicated client-facing room for Acme collaboration.",
+                "project-redesign" => "Project-specific room for redesign updates and decisions.",
+                _ => "Custom collaboration channel."
+            };
+        }
+    }
+
     public List<ChatMessageItem> Messages { get; private set; } = new();
 
     public async Task OnGetAsync()

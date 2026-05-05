@@ -8,7 +8,7 @@
     <div class="d-flex justify-content-between align-items-start">
         <div>
             <h1 class="mb-1"># @Model.ChannelName</h1>
-            <p class="text-muted mb-0">Agency / client channel conversation</p>
+            <p class="text-muted mb-0">@Model.ChannelDescription</p>
         </div>
         <a class="btn btn-outline-secondary" asp-page="/Channels">Back to Channels</a>
     </div>
@@ -56,7 +56,8 @@
                 <div class="card-body">
                     <p class="mb-2"><strong>Name:</strong> #@Model.ChannelName</p>
                     <p class="mb-2"><strong>Type:</strong> @Model.ChannelType</p>
-                    <p class="mb-0"><strong>Status:</strong> SignalR client wiring in progress</p>
+                    <p class="mb-2"><strong>Description:</strong> @Model.ChannelDescription</p>
+                    <p class="mb-0"><strong>Status:</strong> Live chat with SQLite persistence</p>
                 </div>
             </div>
         </div>
