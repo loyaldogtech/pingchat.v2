@@ -20,7 +20,7 @@
                     <strong>Messages</strong>
                 </div>
 
-                <div class="card-body p-0">
+                <div id="messagesContainer" class="card-body p-0 bg-light" style="height: 420px; overflow-y: auto;">
                     <ul id="messagesList" class="list-group list-group-flush">
                         @foreach (var message in Model.Messages)
                         {

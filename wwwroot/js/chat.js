@@ -10,19 +10,16 @@ const messagesList = document.getElementById("messagesList");
 const channelNameInput = document.getElementById("channelName");
 const currentUserInput = document.getElementById("currentUser");
 
-if (sendButton) {
-    sendButton.disabled = true;
+function scrollMessagesToBottom() {
+    if (!messagesList) return;
+    messagesList.scrollTop = messagesList.scrollHeight;
 }
 
-connection.on("ReceiveMessage", function (userName, message) {
+function appendMessage(userName, message, timeText) {
+    if (!messagesList) return;
+
     const item = document.createElement("li");
     item.className = "list-group-item";
-
-    const now = new Date();
-    const timeText = now.toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit"
-    });
 
     item.innerHTML = `
         <strong>${userName}</strong><br />
@@ -31,6 +28,21 @@ connection.on("ReceiveMessage", function (userName, message) {
     `;
 
     messagesList.appendChild(item);
+    scrollMessagesToBottom();
+}
+
+if (sendButton) {
+    sendButton.disabled = true;
+}
+
+connection.on("ReceiveMessage", function (userName, message) {
+    const now = new Date();
+    const timeText = now.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit"
+    });
+
+    appendMessage(userName, message, timeText);
 });
 
 connection.start()
@@ -43,30 +55,52 @@ connection.start()
         if (sendButton) {
             sendButton.disabled = false;
         }
+
+        if (messageInput) {
+            messageInput.focus();
+        }
+
+        scrollMessagesToBottom();
     })
     .catch(function (err) {
         console.error(err.toString());
     });
 
+function sendCurrentMessage() {
+    if (!messageInput || !channelNameInput) {
+        return;
+    }
+
+    const message = messageInput.value.trim();
+    const channelName = channelNameInput.value;
+    const userName = currentUserInput?.value || "Anonymous";
+
+    if (!message || !channelName) {
+        return;
+    }
+
+    connection.invoke("SendMessage", channelName, userName, message)
+        .then(function () {
+            messageInput.value = "";
+            messageInput.focus();
+        })
+        .catch(function (err) {
+            console.error(err.toString());
+        });
+}
+
 if (sendButton) {
     sendButton.addEventListener("click", function (event) {
-        const message = messageInput.value;
-        const channelName = channelNameInput.value;
-        const userName = currentUserInput.value || "Anonymous";
-
-        if (!message || !channelName) {
-            return;
-        }
-
-        connection.invoke("SendMessage", channelName, userName, message)
-            .then(function () {
-                messageInput.value = "";
-                messageInput.focus();
-            })
-            .catch(function (err) {
-                console.error(err.toString());
-            });
-
         event.preventDefault();
+        sendCurrentMessage();
+    });
+}
+
+if (messageInput) {
+    messageInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            sendCurrentMessage();
+        }
     });
 }
