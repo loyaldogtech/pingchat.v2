@@ -7,7 +7,10 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-start">
         <div>
-            <h1 class="mb-1"># @Model.ChannelName</h1>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h1 class="mb-1"># @Model.ChannelName</h1>
+                <span class="badge bg-secondary">@Model.ChannelType</span>
+            </div>
             <p class="text-muted mb-0">@Model.ChannelDescription</p>
         </div>
         <a class="btn btn-outline-secondary" asp-page="/Channels">Back to Channels</a>
@@ -16,18 +19,28 @@
     <div class="row mt-4">
         <div class="col-lg-8">
             <div class="card shadow-sm">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <strong>Messages</strong>
+                    <span class="text-muted small">@Model.Messages.Count message(s)</span>
                 </div>
 
                 <div id="messagesContainer" class="card-body p-0 bg-light" style="height: 420px; overflow-y: auto;">
                     <ul id="messagesList" class="list-group list-group-flush">
-                        @foreach (var message in Model.Messages)
+                        @if (Model.Messages.Any())
                         {
-                            <li class="list-group-item">
-                                <strong>@message.Author</strong><br />
-                                <small class="text-muted">@message.Time</small><br />
-                                <span>@message.Text</span>
+                            @foreach (var message in Model.Messages)
+                            {
+                                <li class="list-group-item">
+                                    <strong>@message.Author</strong><br />
+                                    <small class="text-muted">@message.Time</small><br />
+                                    <span>@message.Text</span>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item text-center py-4 text-muted">
+                                No messages yet. Start the conversation.
                             </li>
                         }
                     </ul>
