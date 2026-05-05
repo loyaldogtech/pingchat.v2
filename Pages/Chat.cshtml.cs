@@ -21,6 +21,22 @@ public class ChatModel : PageModel
 
     public string ChannelName => string.IsNullOrWhiteSpace(Name) ? "unknown" : Name;
 
+    public bool IsDirectMessage => ChannelName.StartsWith("dm-", StringComparison.OrdinalIgnoreCase);
+
+    public string DisplayChannelTitle
+    {
+        get
+        {
+            return ChannelName.ToLower() switch
+            {
+                "dm-amanda" => "Amanda",
+                "dm-chris" => "Chris",
+                "dm-acme-client" => "Acme Client",
+                _ => ChannelName
+            };
+        }
+    }
+
     public string ChannelType
     {
         get
@@ -31,6 +47,9 @@ public class ChatModel : PageModel
                 "internal" => "Agency Only",
                 "client-acme" => "Client Channel",
                 "project-redesign" => "Project Room",
+                "dm-amanda" => "Direct Message",
+                "dm-chris" => "Direct Message",
+                "dm-acme-client" => "Direct Message",
                 _ => "Custom Channel"
             };
         }
@@ -46,6 +65,9 @@ public class ChatModel : PageModel
                 "internal" => "Private internal channel for agency-only discussion.",
                 "client-acme" => "Dedicated client-facing room for Acme collaboration.",
                 "project-redesign" => "Project-specific room for redesign updates and decisions.",
+                "dm-amanda" => "Private direct conversation with Amanda.",
+                "dm-chris" => "Private direct conversation with Chris.",
+                "dm-acme-client" => "Private direct conversation with the Acme client.",
                 _ => "Custom collaboration channel."
             };
         }

@@ -1,19 +1,36 @@
 @page "{name}"
 @model PingChat.Pages.ChatModel
 @{
-    ViewData["Title"] = $"Chat - {Model.ChannelName}";
+    ViewData["Title"] = $"Chat - {Model.DisplayChannelTitle}";
 }
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-start">
         <div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <h1 class="mb-1"># @Model.ChannelName</h1>
+                @if (Model.IsDirectMessage)
+                {
+                    <h1 class="mb-1">@Model.DisplayChannelTitle</h1>
+                }
+                else
+                {
+                    <h1 class="mb-1"># @Model.DisplayChannelTitle</h1>
+                }
+
                 <span class="badge bg-secondary">@Model.ChannelType</span>
             </div>
+
             <p class="text-muted mb-0">@Model.ChannelDescription</p>
         </div>
-        <a class="btn btn-outline-secondary" asp-page="/Channels">Back to Channels</a>
+
+        @if (Model.IsDirectMessage)
+        {
+            <a class="btn btn-outline-secondary" asp-page="/Conversations">Back to Conversations</a>
+        }
+        else
+        {
+            <a class="btn btn-outline-secondary" asp-page="/Channels">Back to Channels</a>
+        }
     </div>
 
     <div class="row mt-4">
@@ -76,10 +93,20 @@
         <div class="col-lg-4 mt-4 mt-lg-0">
             <div class="card shadow-sm">
                 <div class="card-header">
-                    <strong>Channel Details</strong>
+                    <strong>Conversation Details</strong>
                 </div>
                 <div class="card-body">
-                    <p class="mb-2"><strong>Name:</strong> #@Model.ChannelName</p>
+                    <p class="mb-2">
+                        <strong>Name:</strong>
+                        @if (Model.IsDirectMessage)
+                        {
+                            @Model.DisplayChannelTitle
+                        }
+                        else
+                        {
+                            <text>#@Model.DisplayChannelTitle</text>
+                        }
+                    </p>
                     <p class="mb-2"><strong>Type:</strong> @Model.ChannelType</p>
                     <p class="mb-2"><strong>Description:</strong> @Model.ChannelDescription</p>
                     <p class="mb-0"><strong>Status:</strong> Live chat with SQLite persistence</p>
