@@ -9,22 +9,43 @@ const messageInput = document.getElementById("messageInput");
 const messagesList = document.getElementById("messagesList");
 const channelNameInput = document.getElementById("channelName");
 const currentUserInput = document.getElementById("currentUser");
+const messagesContainer = document.getElementById("messagesContainer");
 
 function scrollMessagesToBottom() {
-    if (!messagesList) return;
-    messagesList.scrollTop = messagesList.scrollHeight;
+    if (!messagesContainer) return;
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-function appendMessage(userName, message, timeText) {
+function formatTimestamp(isoUtcString) {
+    const date = new Date(isoUtcString);
+    return date.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit"
+    });
+}
+
+function appendMessage(messageId, userName, messageText, isoUtcString) {
     if (!messagesList) return;
+
+    const emptyState = messagesList.querySelector("[data-empty-state='true']");
+    if (emptyState) {
+        emptyState.remove();
+    }
 
     const item = document.createElement("li");
     item.className = "list-group-item";
+    item.setAttribute("data-message-id", messageId);
+
+    const timeText = formatTimestamp(isoUtcString);
 
     item.innerHTML = `
-        <strong>${userName}</strong><br />
-        <small class="text-muted">${timeText}</small><br />
-        <span>${message}</span>
+        <div class="d-flex justify-content-between align-items-start gap-3">
+            <div class="flex-grow-1">
+                <strong>${userName}</strong><br />
+                <small class="text-muted">${timeText}</small><br />
+                <span>${messageText}</span>
+            </div>
+        </div>
     `;
 
     messagesList.appendChild(item);
@@ -35,14 +56,8 @@ if (sendButton) {
     sendButton.disabled = true;
 }
 
-connection.on("ReceiveMessage", function (userName, message) {
-    const now = new Date();
-    const timeText = now.toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit"
-    });
-
-    appendMessage(userName, message, timeText);
+connection.on("ReceiveMessage", function (messageId, userName, messageText, createdAtUtc) {
+    appendMessage(messageId, userName, messageText, createdAtUtc);
 });
 
 connection.start()

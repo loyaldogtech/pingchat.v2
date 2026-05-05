@@ -68,6 +68,11 @@ public class ChatHub : Hub
         _db.ChannelMessages.Add(chatMessage);
         await _db.SaveChangesAsync();
 
-        await Clients.Group(channelName).SendAsync("ReceiveMessage", userName, message.Trim());
+        await Clients.Group(channelName).SendAsync(
+            "ReceiveMessage",
+            chatMessage.Id,
+            userName,
+            chatMessage.Text,
+            chatMessage.CreatedAtUtc.ToString("O"));
     }
 }
