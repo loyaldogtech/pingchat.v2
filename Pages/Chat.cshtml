@@ -20,23 +20,14 @@
                     <strong>Messages</strong>
                 </div>
                 <div class="card-body bg-light" style="min-height: 320px;">
-                    <div class="mb-3">
-                        <strong>Amanda</strong>
-                        <div class="text-muted small">9:02 AM</div>
-                        <div>Welcome to #@Model.ChannelName.</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <strong>Chris</strong>
-                        <div class="text-muted small">9:04 AM</div>
-                        <div>This is where our real-time SignalR chat will appear next.</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <strong>You</strong>
-                        <div class="text-muted small">9:05 AM</div>
-                        <div>Static page first. Real-time messaging after that.</div>
-                    </div>
+                    @foreach (var message in Model.Messages)
+                    {
+                        <div class="mb-3">
+                            <strong>@message.Author</strong>
+                            <div class="text-muted small">@message.Time</div>
+                            <div>@message.Text</div>
+                        </div>
+                    }
                 </div>
                 <div class="card-footer">
                     <form>
@@ -58,7 +49,7 @@
                 <div class="card-body">
                     <p class="mb-2"><strong>Name:</strong> #@Model.ChannelName</p>
                     <p class="mb-2"><strong>Type:</strong> @Model.ChannelType</p>
-                    <p class="mb-0"><strong>Status:</strong> Connected UI placeholder</p>
+                    <p class="mb-0"><strong>Status:</strong> Static messages loaded from PageModel</p>
                 </div>
             </div>
         </div>
