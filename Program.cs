@@ -31,14 +31,14 @@ else
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
-app.MapHub<PingChat.Hubs.ChatHub>("/chatHub");
+app.MapHub<PingChat.Hubs.ChatHub>("/hubs/chat");
+
 
 app.Run();

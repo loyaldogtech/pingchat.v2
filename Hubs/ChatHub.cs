@@ -1,11 +1,50 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using PingChat.Data;
+using PingChat.Models;
 
 namespace PingChat.Hubs;
 
+[Authorize]
 public class ChatHub : Hub
 {
-    public async Task SendMessage(string user, string message)
+    private readonly ApplicationDbContext _db;
+
+    public ChatHub(ApplicationDbContext db)
     {
-        await Clients.All.SendAsync("ReceiveMessage", user, message);
+        _db = db;
+    }
+
+    public async Task JoinChannel(string channelName)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, channelName);
+    }
+
+    public async Task LeaveChannel(string channelName)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, channelName);
+    }
+
+    public async Task SendMessage(string channelName, string userName, string message)
+    {
+        if (string.IsNullOrWhiteSpace(channelName) ||
+            string.IsNullOrWhiteSpace(userName) ||
+            string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
+        var chatMessage = new ChannelMessage
+        {
+            ChannelName = channelName,
+            UserName = userName,
+            Text = message.Trim(),
+            CreatedAtUtc = DateTime.UtcNow
+        };
+
+        _db.ChannelMessages.Add(chatMessage);
+        await _db.SaveChangesAsync();
+
+        await Clients.Group(channelName).SendAsync("ReceiveMessage", userName, message.Trim());
     }
 }

@@ -19,22 +19,29 @@
                 <div class="card-header">
                     <strong>Messages</strong>
                 </div>
-                <div class="card-body bg-light" style="min-height: 320px;">
-                    @foreach (var message in Model.Messages)
-                    {
-                        <div class="mb-3">
-                            <strong>@message.Author</strong>
-                            <div class="text-muted small">@message.Time</div>
-                            <div>@message.Text</div>
-                        </div>
-                    }
+
+                <div class="card-body p-0">
+                    <ul id="messagesList" class="list-group list-group-flush">
+                        @foreach (var message in Model.Messages)
+                        {
+                            <li class="list-group-item">
+                                <strong>@message.Author</strong><br />
+                                <small class="text-muted">@message.Time</small><br />
+                                <span>@message.Text</span>
+                            </li>
+                        }
+                    </ul>
                 </div>
+
                 <div class="card-footer">
+                    <input type="hidden" id="channelName" value="@Model.ChannelName" />
+                    <input type="hidden" id="currentUser" value="@(User.Identity?.Name ?? "Anonymous")" />
+
                     <form>
-                        <label class="form-label">New message</label>
+                        <label class="form-label" for="messageInput">New message</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Type a message..." />
-                            <button type="button" class="btn btn-primary">Send</button>
+                            <input id="messageInput" type="text" class="form-control" placeholder="Type a message..." />
+                            <button id="sendButton" type="button" class="btn btn-primary">Send</button>
                         </div>
                     </form>
                 </div>
@@ -49,9 +56,14 @@
                 <div class="card-body">
                     <p class="mb-2"><strong>Name:</strong> #@Model.ChannelName</p>
                     <p class="mb-2"><strong>Type:</strong> @Model.ChannelType</p>
-                    <p class="mb-0"><strong>Status:</strong> Static messages loaded from PageModel</p>
+                    <p class="mb-0"><strong>Status:</strong> SignalR client wiring in progress</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+    <script src="~/js/chat.js"></script>
+}

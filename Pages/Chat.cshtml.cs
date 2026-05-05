@@ -1,12 +1,21 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using PingChat.Data;
 
 namespace PingChat.Pages;
 
 [Authorize]
 public class ChatModel : PageModel
 {
+    private readonly ApplicationDbContext _db;
+
+    public ChatModel(ApplicationDbContext db)
+    {
+        _db = db;
+    }
+
     [BindProperty(SupportsGet = true)]
     public string Name { get; set; } = string.Empty;
 
@@ -29,14 +38,16 @@ public class ChatModel : PageModel
 
     public List<ChatMessageItem> Messages { get; private set; } = new();
 
-    public void OnGet()
+    public async Task OnGetAsync()
     {
-        Messages = new List<ChatMessageItem>
-        {
-            new("Amanda", "9:02 AM", $"Welcome to #{ChannelName}."),
-            new("Chris", "9:04 AM", "This is where our real-time SignalR chat will appear next."),
-            new("You", "9:05 AM", "Static page first. Real-time messaging after that.")
-        };
+        Messages = await _db.ChannelMessages
+            .Where(m => m.ChannelName == ChannelName)
+            .OrderBy(m => m.CreatedAtUtc)
+            .Select(m => new ChatMessageItem(
+                m.UserName,
+                m.CreatedAtUtc.ToLocalTime().ToString("h:mm tt"),
+                m.Text))
+            .ToListAsync();
     }
 
     public record ChatMessageItem(string Author, string Time, string Text);
