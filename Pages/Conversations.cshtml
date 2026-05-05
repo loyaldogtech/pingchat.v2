@@ -1,0 +1,32 @@
+@page
+@model PingChat.Pages.ConversationsModel
+@{
+    ViewData["Title"] = "Conversations";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <h1 class="mb-1">Conversations</h1>
+            <p class="text-muted mb-0">Start a direct conversation by choosing a user.</p>
+        </div>
+        <a class="btn btn-outline-secondary" asp-page="/Dashboard">Back to Dashboard</a>
+    </div>
+
+    <div class="list-group mt-4">
+        @foreach (var user in Model.AvailableUsers)
+        {
+            <a asp-page="/Chat"
+               asp-route-name="@user.ConversationChannelName"
+               class="list-group-item list-group-item-action">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">@user.DisplayName</div>
+                        <div class="text-muted small">@user.RoleLabel</div>
+                    </div>
+                    <span class="badge bg-secondary rounded-pill">Direct Message</span>
+                </div>
+            </a>
+        }
+    </div>
+</div>
